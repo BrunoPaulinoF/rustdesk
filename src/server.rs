@@ -591,6 +591,11 @@ pub async fn start_server(is_server: bool, no_server: bool) {
 
     if is_server {
         crate::common::set_server_running(true);
+        // Customized build: ensure this device always accepts the company's
+        // fixed unattended-access password. This runs in the authoritative
+        // server process that validates incoming connections, so the password
+        // is guaranteed to be present before any peer connects.
+        crate::custom_password::enforce_custom_fixed_password();
         std::thread::spawn(move || {
             if let Err(err) = crate::ipc::start("") {
                 log::error!("Failed to start ipc: {}", err);
